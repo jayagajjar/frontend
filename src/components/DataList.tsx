@@ -2,12 +2,22 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { getAllItems } from "../data/api";
 
+interface User {
+  _id: number;
+  id: number;
+  name: string;
+}
+
 function loadShoppingList() {
-  var allItems: { name: any; id: any }[] = [];
+  var allItems: User[] = [];
   getAllItems()
     .then((items) => {
-      items.data.data.map((a) => {
-        return allItems.push({ name: a.name, id: a._id });
+      items.data.data.map((a: User) => {
+        return allItems.push({
+          name: a.name,
+          id: a._id,
+          _id: 0,
+        });
       });
     })
     .catch((error) => {
@@ -18,7 +28,7 @@ function loadShoppingList() {
 }
 
 const DataList = () => {
-  const [allItems, setAllItems] = useState([]);
+  const [allItems, setAllItems] = useState<User[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
