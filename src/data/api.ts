@@ -6,9 +6,11 @@ const api = axios.create({
 })
 
 export const getAllItems = () => api.get(`/shoppinglist`)
+export const insertItem = (payload: any) => api.post(`/shoppinglist`, payload)
 
 const apis = {
     getAllItems,
+    insertItem
 }
 
 export default apis

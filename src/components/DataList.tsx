@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { getAllItems } from "../data/api";
+import { getAllItems, insertItem } from "../data/api";
 
 interface User {
   _id: number;
@@ -8,46 +8,43 @@ interface User {
   name: string;
 }
 
-function loadShoppingList() {
-  var allItems: User[] = [];
-  getAllItems()
-    .then((items) => {
-      items.data.data.map((a: User) => {
-        return allItems.push({
-          name: a.name,
-          id: a._id,
-          _id: 0,
-        });
-      });
-    })
-    .catch((error) => {
-      if (error.response.status === 404) {
-        console.log("Shopping list is empty");
-      }
-    });
-}
-
 const DataList = () => {
   const [allItems, setAllItems] = useState<User[]>([]);
-
+  const [newItemName, setNewItemName] = useState();
+  const fetchData = async () => {
+    const response = await getAllItems();
+    console.log(response.data);
+    setAllItems(response.data.data);
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await axios.get(
-        "https://backend-25ww.onrender.com/api/shoppinglist"
-      );
-      console.log(response.data);
-      setAllItems(response.data.data);
-    };
     fetchData();
   }, []);
 
+  const handleInputChange = (event: any) => {
+    console.log(event.target.value);
+    setNewItemName(event.target.value);
+  };
+
   return (
-    <h1>
-      Data{" "}
-      {allItems.map((user) => (
-        <li key={user.id}>{user.name}</li>
-      ))}
-    </h1>
+    <>
+      <h1>
+        Data{" "}
+        {allItems.map((user) => (
+          <li key={user._id}>{user.name}</li>
+        ))}
+      </h1>
+      <input type="text" name="newItemName" onChange={handleInputChange} />
+      <button
+        onClick={() => {
+          insertItem({ name: newItemName }).then((res) => {
+            console.log(`Item inserted successfully ` + newItemName);
+            fetchData();
+          });
+        }}
+      >
+        Add Item
+      </button>
+    </>
   );
 };
 export default DataList;
